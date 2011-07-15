@@ -1,0 +1,53 @@
+//
+//  PersonHandler.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/04/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#pragma once
+
+#import "Blob.h"
+#include <vector>
+#include <stdio.h>
+#include  <iostream>
+
+#import "Renderer.h"
+#import "Pair.h"
+
+
+using namespace std; 
+
+class PersonHandler {
+public:
+	int idcount;
+    int nullCount;
+    
+    
+    vector< Blob*> blobVectorOld;
+    int triangleCount;
+    float *triangles;
+    
+    int cubeCount;
+    float *cubes;
+    
+    Renderer *renderer;
+    World *world;
+	void setup();
+	void update();
+	//void draw();
+	//void exit();
+	void setBlobs(vector<Blob*> blobVector);
+    
+    void bubleSort( vector<Pair*> pairs);
+    
+    void addPerson(int personID);
+ 
+    void removePerson(int personID);
+    void setPersonData(float* bitmapData )	;
+    
+	
+	
+    
+	
+};

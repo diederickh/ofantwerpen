@@ -1,0 +1,25 @@
+//
+//  KinectTriangle.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 03/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#pragma once
+
+
+#import "KinectVertex.h"
+
+class KinectTriangle
+{
+public:
+    KinectVertex *v1;
+    KinectVertex *v2;
+    KinectVertex *v3;
+
+    void draw();
+
+
+
+};
+    

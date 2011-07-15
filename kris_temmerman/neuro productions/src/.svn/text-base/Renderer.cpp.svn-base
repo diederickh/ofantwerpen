@@ -1,0 +1,612 @@
+//
+//  Renderer.cpp
+//  polygonExample
+//
+//  Created by Kris Temmerman on 20/04/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "Renderer.h"
+//#include "btBulletDynamicsCommon.h"
+void Renderer::setup(){
+
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+   
+    Matrix3D *m =new Matrix3D;
+    m->rotate(15,1,0,0);
+    
+    Matrix3D *m2 =new Matrix3D;
+    m2->translate(-100,0,0);
+    
+    Matrix3D *mR =new Matrix3D;
+  // mR->multiply(m2->getRawData(), m->getRawData());
+    
+    worldMarix =m2->getRawData();
+   
+    
+    background =new BackGround; 
+    background->setup();
+    personTriangleCount =0;
+    
+    mainShaderProgram =new MainShaderProgram;
+     mainShaderProgram->worldMatrix =worldMarix;
+ 
+    
+    
+   boxShaderProgram =new BoxShaderProgram;
+    boxShaderProgram->worldMatrix =worldMarix;
+    
+    
+    strokeShaderProgram =new StrokeShaderProgram;
+    strokeShaderProgram->worldMatrix =worldMarix;
+    
+    personShaderProgram =new PersonShaderProgram;
+    personShaderProgram->worldMatrix =worldMarix;
+     
+    mainModel =  MainModel::Instance();
+}
+void Renderer::update(){
+   
+  
+     glEnable(GL_TEXTURE_2D);
+     background->update();
+    int numVragen = vragen.size();
+   
+   
+    glUseProgram(0);
+    int i;
+    for(i=0;i<numVragen;i++)
+    {
+        vragen[i]->update();
+    
+    }
+    bubleSort();
+   
+    /*
+    glEnable(GL_TEXTURE_2D);
+    background->update();
+    
+    count++; // hack wait for full setup
+    if(count>5)
+    {
+
+    
+    for (int i=0; i<NUM_SPRITES;i++)
+    {
+        sprites[i]->update();
+        
+    }
+    
+    posX+= (tarX -posX)/50;
+    posY+= (tarY -posY)/50;
+    posZ+= (tarZ -posZ)/50;
+    
+    textTest->x=  posX;
+    textTest->y =posY;
+    textTest->z =posZ;
+    
+        textTest->update();   
+        
+        //sort for correct alpha + ik denk dat dit sneller gaat zijn dan een depth buffer?
+        
+    bubleSort();
+            //
+    // update lines
+    //
+    glDisable(GL_TEXTURE_2D);
+   
+        
+    lineShaderProgram->enable(); 
+    for (int i=0; i<NUM_SPRITES;i++)
+    {
+        
+        lineShaderProgram->renderSprite(sprites[i]);
+        
+    }
+    lineShaderProgram->disable(); 
+       
+    glEnable(GL_TEXTURE_2D);
+       
+    //
+    // update depth of fo field
+    //
+  
+    dofShaderProgram->enable();    
+    for (int i=0; i<NUM_SPRITES;i++)
+    {
+       dofShaderProgram->renderSprite(sprites[i]);
+        
+    }
+    dofShaderProgram->disable();  
+        
+        
+    }*/
+}
+void Renderer::draw(){
+   
+    
+     int i;
+    
+   
+    glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+    
+    glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+    
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+	background->draw();
+    
+    glEnable (GL_DEPTH_TEST); 
+    int numVragen = vragen.size();
+ 
+  /*
+    
+    glEnable (GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    mainShaderProgram->enable();
+    
+    int numVragen = vragen.size();
+    for(i=0;i<numVragen;i++)
+    {
+        if(vragen[i].renderAsText)
+            mainShaderProgram->renderSprite (&vragen[i]);
+        
+    }
+    
+    
+    
+    mainShaderProgram->disable();
+    
+    */
+   glDisable (GL_TEXTURE_2D);
+    glEnable (GL_BLEND);
+      glLineWidth(1.5);
+    boxShaderProgram->enable();
+    
+    
+    for (int i=0;i<numVragen;i++)
+    {
+        
+        if(vragen[i]->renderAsCube)
+        boxShaderProgram->renderBox(vragen[i]);
+        
+    }
+
+    boxShaderProgram->disable();
+    
+    
+    
+    
+    personShaderProgram->renderPersons(personTriangles, personTriangleCount);
+    
+    
+      glLineWidth(2);
+   
+    int numBlobs  = blobVectorL.size();
+    if(numBlobs>0)
+    {
+        int i;
+        strokeShaderProgram->enable();
+        //cout << blobVectorL.size()<< "blobs in denderer \n";
+        for (i=0;i<numBlobs;i++)
+        {
+            
+            Blob *blob2 =  blobVectorL[i];
+            /*cout <<"\n blob in renderer draw " <<" " << blob2->numIndices<<"\n data :";
+            for(int k=0;k<blob2->numIndices;k++)
+            {
+                cout << blob2->data[k]<<" ";
+                
+                
+            }*/
+            
+        strokeShaderProgram->renderStroke(blob2);
+        }
+        
+        
+        
+        strokeShaderProgram->disable();
+    }
+   
+    
+    
+    
+    
+   
+    glEnable (GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    mainShaderProgram->enable();
+    
+    
+    for(i=0;i<numVragen;i++)
+    {
+        
+        if(vragen[i]->renderAsText)
+            mainShaderProgram->renderSprite (vragen[i]);
+        
+    }
+    
+    
+    
+    mainShaderProgram->disable();
+    
+    /*
+     
+     
+     
+     
+     */
+    
+    
+     glDisable  (GL_BLEND);
+    GLenum errCode;
+    errCode = glGetError();
+    if (errCode != GL_NO_ERROR) 
+    {
+        if (errCode == GL_INVALID_ENUM)cout << "invalid enumeration" ;
+        if (errCode == GL_INVALID_VALUE)cout << "invalid value" ;
+        if (errCode == GL_INVALID_OPERATION)cout << "invalid operation" ;
+        if (errCode == GL_OUT_OF_MEMORY)cout << "invalid out of memory" ;
+        
+    }	
+	glUseProgram(0);
+    
+     glDisable(GL_DEPTH_TEST);
+    return;
+	/*mainShaderProgram->enable();
+    
+    for (int i=0; i<NUM_SPRITES;i++)
+    {
+        mainShaderProgram->renderSprite(sprites[i]);
+    }
+    
+    mainShaderProgram->disable();*/
+	
+    /*textShaderProgram->enable();
+    
+    textShaderProgram->renderSprite(textTest);
+    textShaderProgram->disable();
+
+    */
+   /*boxShaderProgram->enable();
+ 
+    
+    for (int i=0;i<world->numBoxes;i++)
+    {
+       
+      
+        boxShaderProgram->renderBox(&world->boxes[i]);
+    
+    }
+    if(DEBUG_CUBES){
+    for (int i=0;i<world->numBoxes;i++)
+    {
+        
+        
+        boxShaderProgram->renderBox(&world->boxesStatic[i]);
+        
+    }}
+
+     boxShaderProgram->disable();
+    
+    
+       */
+    
+   personShaderProgram->renderPersons(personTriangles, personTriangleCount);
+    
+ 
+    /*
+    int numBlobs  = blobVectorL.size();
+    if(numBlobs>0)
+    {
+        int i;
+        strokeShaderProgram->enable();
+        //cout << blobVectorL.size()<< "blobs in denderer \n";
+        tarX =blobVectorL[0].data[0]+20;
+        tarY =blobVectorL[0].data[1]+20;
+        tarZ =blobVectorL[0].data[2];
+        
+       for (i=0;i<numBlobs;i++)
+        {
+            
+            strokeShaderProgram->renderStroke(blobVectorL[i].data,blobVectorL[i].numIndices);
+            
+
+        }
+       
+    
+    
+       strokeShaderProgram->disable();
+    }else
+    {
+        tarX =1000;
+        tarY=500;
+        tarZ =-1000;
+    
+    }*/
+/*	GLenum errCode;
+    errCode = glGetError();
+    if (errCode != GL_NO_ERROR) 
+    {
+        if (errCode == GL_INVALID_ENUM)cout << "invalid enumeration" ;
+        if (errCode == GL_INVALID_VALUE)cout << "invalid value" ;
+        if (errCode == GL_INVALID_OPERATION)cout << "invalid operation" ;
+        if (errCode == GL_OUT_OF_MEMORY)cout << "invalid out of memory" ;
+        
+    }	
+	glUseProgram(0);
+    
+    
+     glDisable(GL_DEPTH_TEST);
+    */
+
+
+}
+void Renderer::setBlobs(vector<Blob*> blobVector)
+{
+    
+    
+    
+   
+    int numBlobs = blobVector.size();
+ 
+    blobVectorL= blobVector;
+    
+    int numVragen = vragen.size();
+    int i;
+    int j;
+    for(i=0;i<numBlobs;i++)
+    {
+        int searchID = blobVector[i]->id;
+        
+        Blob *blob =  blobVector[i];
+        blob->setCenter();
+        Blob *blob2 =  blobVectorL[i];
+      //  cout <<"\n blob in renderer " << blob->numIndices<<" " << blob2->numIndices<<"\n";
+        
+        bool found =false;
+        for(j=0;j<numVragen;j++)
+        {
+            if ( vragen[j]->friendID == searchID)
+            {
+                found =true ;
+                break;
+            }
+                       
+        }
+        if (found)
+        {
+           // cout << "found" << vragen[j].friendID << "\n";
+           vragen[j]->setTextPositionToBlob( *blobVector[i]);
+            
+        }
+        else
+        {
+          
+            int index =getNearestEmptyVraag((blobVector[i]->minX +blobVector[i]->maxX)/2 ,(blobVector[i]->minY +blobVector[i]->maxY)/2,blobVector[i]->zSum);
+            vragen[index]->friendID  =searchID;
+            vragen[index]->setAsTextBalon();
+            
+        }
+
+    }
+   
+    
+  
+  for(i=0;i<numVragen;i++)
+    {
+        if(vragen[i]->friendID== 0)
+        {
+        
+            continue;
+        }
+        int searchID = vragen[i]->friendID;
+        bool found =false;
+        for(j=0;j<numBlobs;j++)
+        {
+            if(blobVector[j]->id ==searchID) found =true;
+        
+        }
+        
+        if(!found) 
+        {
+            vragen[i]->friendID =0;
+            vragen[i]->setAsCube();
+       // cout << "remove vraag \n";
+        }
+        
+        
+    }
+    if( mainModel->state ==KILL_ATRACT_STATE || mainModel->state ==KILL_ROTATE_STATE  )
+    {
+        for(i=0;i<numVragen;i++)
+        {
+            vragen[i]->hangfriendID =-1;
+        
+        
+        }
+    
+    }
+    if( mainModel->state ==ATTRACT_STATE  || mainModel->state ==ROTATE_STATE )
+    {
+    
+        int foundCount =0;
+        for(i=0;i<numVragen;i++)
+        {
+            if(vragen[i]->friendID ==0 && vragen[i]->isInWorld ==false)
+            {
+
+                float distSquare =10000;
+                float testDist;
+                bool found =false; 
+                int friendBlobIndex;
+                
+                for(j=0;j<numBlobs;j++)
+                {
+                    float x=  blobVector[j]->centerX;
+                    float y=  blobVector[j]->centerY;
+                    float z=  blobVector[j]->centerZ;
+                    testDist =(x- vragen[i]->x)*(x- vragen[i]->x)  +(y- vragen[i]->y)*(y- vragen[i]->y)+(z- vragen[i]->z)*(z- vragen[i]->z);
+                    if(testDist< distSquare)
+                    {
+                    
+                        distSquare =testDist;
+                        friendBlobIndex =j;
+                       // cout << "foundFriend \n";
+                        
+                        found =true;
+                    }
+                   
+                
+                }
+                //if(foundCount> numBlobs *6 )found =false;
+                if (found)
+                {
+                    foundCount++;
+                    if (vragen[i]->hangfriendID ==blobVector[friendBlobIndex]->id )
+                    {
+                    // do nothing
+                        
+                       //vragen[i]->tarTextX = blobVector[friendBlobIndex]->centerX +vragen[i]->hangfriendX;
+                        // 
+                        //vragen[i]->tarTextZ = blobVector[friendBlobIndex]->centerZ +vragen[i]->hangfriendZ;
+                        if(  mainModel->state ==ROTATE_STATE ){
+                        vragen[i]->angle+=0.1;
+                        float offX = sin(vragen[i]->angle) *90;
+                        float offY = cos (vragen[i]->angle) *90;
+                        vragen[i]->tarTextX = blobVector[friendBlobIndex]->centerX +offX;
+                       // vragen[i]->tarTextY= blobVector[friendBlobIndex]->centerY +offY;
+                         vragen[i]->tarTextZ= blobVector[friendBlobIndex]->centerZ +offY;
+                        vragen[i]->tarTextY= blobVector[friendBlobIndex]->centerY +vragen[i]->hangfriendY;
+                        
+                    }
+                        if(  mainModel->state ==ATTRACT_STATE )
+                        {
+                            vragen[i]->tarTextX = blobVector[friendBlobIndex]->centerX +vragen[i]->hangfriendX;
+                            // 
+                            vragen[i]->tarTextZ = blobVector[friendBlobIndex]->centerZ +vragen[i]->hangfriendZ;
+                             vragen[i]->tarTextY= blobVector[friendBlobIndex]->centerY +vragen[i]->hangfriendY;
+                        }
+                   
+                       
+                        
+                    }
+                    else
+                    {
+                    
+                        vragen[i]->hangfriendID = blobVector[friendBlobIndex]->id;
+                        
+                        vragen[i]->hangfriendX =( vragen[i]->x -blobVector[friendBlobIndex]->centerX )*0.95;
+                        vragen[i]->hangfriendY =(vragen[i]->y -blobVector[friendBlobIndex]->centerY)*0.95;
+                        vragen[i]->hangfriendZ =( vragen[i]->z-blobVector[friendBlobIndex]->centerZ )*0.95;
+                          cout << "******\n";
+                        cout <<  vragen[i]->hangfriendX <<" "<< vragen[i]->hangfriendY<<" "<< vragen[i]->hangfriendZ << "\n";
+                        cout <<  blobVector[friendBlobIndex]->centerX  <<" "<<blobVector[friendBlobIndex]->centerY<<" "<< blobVector[friendBlobIndex]->centerZ << "\n";
+                        vragen[i]->hangFriendLock =((float)rand()/RAND_MAX)*100 +20 ;
+                        
+                        
+                        float dist = sqrt((float)testDist);
+                        float cosT =  vragen[i]->hangfriendZ/dist;
+                        float angle = acos(cosT);
+                        
+                        
+                        vragen[i]->angle  = angle ;
+                        
+                    }
+               
+                
+                
+                }else
+                {
+                
+                    vragen[i]->hangfriendID =-1;
+                
+                
+                }
+                
+                
+                
+                
+            } 
+               
+               
+        }
+   //cout << "atract\n";
+    
+    
+    }
+
+}
+int  Renderer::getNearestEmptyVraag(float x,float y,float z)
+{
+   
+    float squareDist=100000000.0;
+    int numVragen = vragen.size();
+    int i;
+   
+    float testDist;
+    int index =0;
+    for(i=0;i<numVragen;i++)
+    {
+        if(vragen[i]->friendID ==0 && vragen[i]->isInWorld ==false)
+        {
+        
+            testDist =(x- vragen[i]->x)*(x- vragen[i]->x)  +(y- vragen[i]->y)*(y- vragen[i]->y)+(z- vragen[i]->z)*(z- vragen[i]->z);
+            if(testDist< squareDist )
+            {
+                squareDist =testDist;
+                index =i;
+            
+            }
+        
+        }
+    }
+     /*cout << "\nsdis: " <<  squareDist<< "\n";
+    cout << x <<" " <<vragen[index]->x <<" "<<y<<" "<<vragen[index]->y<<" "<<z<<" "<<vragen[index]->z;
+    cout << "\nindex: " << index<< "\n";*/
+    return index;
+}
+
+
+void Renderer::windowResized(int w, int h){
+   
+     mainShaderProgram->windowResized(w,h);
+    boxShaderProgram->windowResized(w,h);
+    strokeShaderProgram->windowResized(w,h);
+    background->windowResized(w,h);
+       personShaderProgram->windowResized(w/10,h/10);
+
+}
+
+
+
+void Renderer::bubleSort()
+{
+
+   int i, j, flag = 1;    // set flag to 1 to start first pass
+    Vraag *temp;             // holding variable
+    int numLength = vragen.size(); 
+    for(i = 1; (i <= numLength) && flag; i++)
+    {
+        flag = 0;
+        for (j=0; j < (numLength -1); j++)
+        {
+            if (vragen[j+1]->z < vragen[j]->z)      // ascending order simply changes to <
+            { 
+                temp = vragen[j];             // swap elements
+                vragen[j] = vragen[j+1];
+                vragen[j+1] = temp;
+                flag = 1;               // indicates that a swap occurred.
+            }
+        }
+    }
+    return;
+
+
+}

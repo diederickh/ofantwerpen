@@ -1,0 +1,64 @@
+//
+//  Constants.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 13/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#pragma once
+//debug
+#define DEBUG_KRIS 0
+#define DEBUG_CUBES 0
+//
+
+//kinect positie
+#define KINECT_START_ANGLE -20  //x as
+#define KINECT_ROTATION2 16//y as/2
+#define KINECT_START_HEIGHT -100
+
+
+// kinect sizes
+#define KINECT_W 800
+#define KINECT_H 360
+#define KINECT_W2 400
+#define KINECT_H2 180
+#define KINECT_SIZE KINECT_W *KINECT_H
+
+
+
+#define Z_MARGE 50
+#define XY_MARGE 20
+
+
+// vragen text en margins
+
+#define TBFONT "Interstate Bold.ttf"
+#define TBFONT_SIZE 25
+#define TBFONT_LINEHEIGTH 30
+
+#define BLUR_MARGIN 15
+#define RECT_MARGIN 10
+#define PIJL_HEIGHT 20
+#define PIJL_WIDTH 20
+#define PIJL_X 0
+
+#define TEXT_CUBE_SCALE 0.1
+
+//CAMERA
+
+#define CAMERA_FOV 50
+
+//STATES
+// states meer dan 1000 zijn states met physics ingeschakeld
+
+#define START_STATE 1
+#define ATTRACT_STATE 100
+#define KILL_ATRACT_STATE 101
+
+#define ROTATE_STATE 102
+#define KILL_ROTATE_STATE 103
+
+
+#define BUMB_STATE 1001
+

@@ -1,0 +1,32 @@
+//
+//  VraagBuilder.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#pragma once
+
+
+#include <iostream>
+#include "ofMain.h"
+#include <vector> 
+
+
+#import "Vraag.h"
+
+using namespace std;
+
+class VraagBuilder
+{
+
+    ofTrueTypeFont font; 
+    
+public:
+    VraagBuilder(vector<string> vragenString);
+    vector<Vraag*> vragen;
+
+
+
+
+};

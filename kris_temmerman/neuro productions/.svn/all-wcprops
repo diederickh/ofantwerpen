@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/kinect/!svn/ver/5/kinectExample_t
+END
+kinectExample.vcxproj
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/kinect/!svn/ver/4/kinectExample_t/kinectExample.vcxproj
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/kinect/!svn/ver/4/kinectExample_t/.project
+END
+addons.make
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/kinect/!svn/ver/4/kinectExample_t/addons.make
+END
+kinectExample.sln
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/kinect/!svn/ver/4/kinectExample_t/kinectExample.sln
+END
+cb_build_runner.sh
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/kinect/!svn/ver/4/kinectExample_t/cb_build_runner.sh
+END
+openFrameworks-Info.plist
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/kinect/!svn/ver/4/kinectExample_t/openFrameworks-Info.plist
+END
+.cproject
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/kinect/!svn/ver/4/kinectExample_t/.cproject
+END
+kinectExample.vcxproj.filters
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/kinect/!svn/ver/4/kinectExample_t/kinectExample.vcxproj.filters
+END
+kinectExample.cbp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/kinect/!svn/ver/4/kinectExample_t/kinectExample.cbp
+END
+makefile
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/kinect/!svn/ver/4/kinectExample_t/makefile
+END

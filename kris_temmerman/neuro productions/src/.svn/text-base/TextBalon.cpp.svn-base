@@ -1,0 +1,175 @@
+//
+//  TextBalon.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "TextBalon.h"
+
+TextBalon::TextBalon()
+{
+
+
+}
+
+void TextBalon::setVraag(string vraagString)
+{
+
+    vraags =vraagString;
+    //
+    //calculate sizes
+    //
+   
+    //ofRectangle *rect =new ofRectangle(0, 0, 200, 100) ;//font.getStringBoundingBox( vraagString, 0 ,TBFONT_LINEHEIGTH);
+    ofRectangle rect =font->getStringBoundingBox( vraagString, 0 ,TBFONT_LINEHEIGTH);
+    
+    rectWidth =rect.width +RECT_MARGIN *2;
+    rectHeight = rect.height +RECT_MARGIN *2;
+    
+    planeWidth  =rectWidth +BLUR_MARGIN*2;
+    planeHeight =rectHeight +BLUR_MARGIN*2 +PIJL_HEIGHT;
+
+    
+    pijlX =(-planeWidth/2 +PIJL_X) *TEXT_CUBE_SCALE;
+    pijlY =(planeHeight/2 +PIJL_HEIGHT)*TEXT_CUBE_SCALE;
+    
+    //
+    //create texture en framebuffer
+    //
+    
+    // zonder DOF todo
+    glGenTextures(1, &textureId);
+    
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, planeWidth,planeHeight, 0,
+				 GL_RGBA, GL_FLOAT, 0 );
+	glBindTexture(GL_TEXTURE_2D, 0);
+    
+    	
+	glGenFramebuffersEXT(1, &fboIdTextBalon);
+   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboIdTextBalon);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+							  GL_TEXTURE_2D, textureId, 0);
+    
+   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+    /*
+    
+    glViewport(0,0,planeWidth,planeHeight);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboIdTextBalon);
+    
+    
+	glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT );
+    
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, planeWidth,0,-planeHeight,  0, 1);
+    
+    glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+    glTranslatef(0,- planeHeight, 0);
+    
+    ofSetColor(0,0,0,255);
+    
+    ofRect(BLUR_MARGIN, BLUR_MARGIN, rectWidth ,rectHeight);
+    
+    ofSetColor(255,0,0,255);
+    ofTriangle (BLUR_MARGIN+PIJL_X,rectHeight +BLUR_MARGIN,
+                BLUR_MARGIN+ PIJL_X+PIJL_WIDTH,rectHeight +BLUR_MARGIN,
+                BLUR_MARGIN +PIJL_X,rectHeight  +BLUR_MARGIN+PIJL_HEIGHT);
+    
+    
+    
+    //  font.drawString(vraagString,  RECT_MARGIN +BLUR_MARGIN,TBFONT_LINEHEIGTH+ RECT_MARGIN +BLUR_MARGIN);
+    
+    
+    
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+*/
+    
+    
+    
+    float startX = -rectWidth/2 -BLUR_MARGIN;
+    float startY = -rectHeight/2 -BLUR_MARGIN-PIJL_HEIGHT;
+    
+    planeData[0]=startX *TEXT_CUBE_SCALE;
+	planeData[1]=startY *TEXT_CUBE_SCALE;
+    
+	planeData[2]=0;
+	planeData[3]=0;
+	
+	planeData[4]=(startX+planeWidth)*TEXT_CUBE_SCALE;
+	planeData[5]=startY*TEXT_CUBE_SCALE;
+    
+	planeData[6]=1;
+	planeData[7]=0;
+	
+	planeData[8]=startX*TEXT_CUBE_SCALE;
+	planeData[9]=(startY+planeHeight)*TEXT_CUBE_SCALE;
+    
+	planeData[10]=0;
+	planeData[11]=1;
+	
+	
+	
+	planeData[12]=(startX+planeWidth)*TEXT_CUBE_SCALE;
+	planeData[13]=(startY+planeHeight)*TEXT_CUBE_SCALE;
+    
+	planeData[14]=1;
+	planeData[15]=1;
+
+    
+   
+ 
+
+
+
+}
+
+void TextBalon::update()
+{
+    
+   
+    glViewport(0,0,planeWidth,planeHeight);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboIdTextBalon);
+   
+     
+	glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT );
+    
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, planeWidth,0,-planeHeight,  0, 1);
+    
+    glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+    glTranslatef(0,- planeHeight, 0);
+    
+     ofSetColor(0,0,0,255);
+  
+    ofRect(BLUR_MARGIN, BLUR_MARGIN, rectWidth ,rectHeight);
+    
+    
+    ofTriangle (BLUR_MARGIN+PIJL_X,rectHeight +BLUR_MARGIN,
+                BLUR_MARGIN+ PIJL_X+PIJL_WIDTH,rectHeight +BLUR_MARGIN,
+                BLUR_MARGIN +PIJL_X,rectHeight  +BLUR_MARGIN+PIJL_HEIGHT);
+    
+    
+   ofSetColor(255,255,255,255);
+     font->drawString(vraags,  RECT_MARGIN +BLUR_MARGIN,TBFONT_LINEHEIGTH+ RECT_MARGIN +BLUR_MARGIN);
+    
+    
+    
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    
+	 
+
+}

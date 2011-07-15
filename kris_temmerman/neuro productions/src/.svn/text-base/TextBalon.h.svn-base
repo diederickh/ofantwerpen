@@ -1,0 +1,63 @@
+//
+//  TextBalon.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#pragma once
+
+#include "ofMain.h"
+#include <iostream>
+#include "Constants.h"
+
+#import <GLUT/GLUT.h>
+#import "GausianBlurFactory.h"
+#import "Matrix3D.h"
+
+
+
+
+using namespace std;
+
+class TextBalon
+{
+
+
+    GLuint fboIdTextBalon;
+    GLuint fboIdDOF;
+    GLuint fboIdDOF2;
+    
+    
+    GLuint textBalonTextureId;
+    GLuint dofTextureId;
+    GLuint dofTextureId2;
+    
+   
+    string vraags;
+
+public: 
+   
+    TextBalon();
+    void setVraag(string vraagString);
+    void update();
+    
+    ofTrueTypeFont *font;
+    
+    
+    GLuint textureId;
+    GLfloat* objectMatrix;  
+    
+    
+    GLfloat planeData[16] ;	
+
+    float planeWidth;
+    float planeHeight;
+    
+    float rectWidth;
+    float rectHeight;
+    
+    float pijlX;
+    float pijlY;
+};

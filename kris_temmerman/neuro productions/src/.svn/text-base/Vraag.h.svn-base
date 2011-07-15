@@ -1,0 +1,104 @@
+//
+//  Vraag.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#pragma once
+
+
+#include <iostream>
+#include "ofMain.h"
+#include <vector> 
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+
+
+#import "VraagBox.h"
+#import "TextBalon.h"
+#import "Blob.h"
+using namespace std;
+
+
+class Vraag
+{
+   
+    float speed;
+    
+    int blurRadius;
+
+    float targetZ;
+    float targetY;
+    bool isTextBalon;
+    
+public:
+  
+    int friendID;
+    int id;
+    string vraagString;
+
+    
+    ofTrueTypeFont *font; 
+    
+    bool renderAsText ;
+    bool renderAsCube ;
+    
+    
+    Vraag();
+    void init();
+    void update();
+    
+    
+
+    
+    VraagBox *vraagBox;
+    TextBalon *textBalon;
+    
+   
+    GLfloat* objectMatrix;
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+        
+  
+    GLfloat  tarTextX; 
+    GLfloat tarTextY;
+     GLfloat tarTextZ;
+    GLfloat  boxScaleZ;
+     GLfloat boxScale;
+    
+    int hitCount;
+    void setAsTextBalon();
+    void setAsCube();
+    
+    void setTextPositionToBlob( Blob friendBlob);
+    
+    
+    float   textAlpha;
+    
+    bool isAnimateToVraag; 
+    bool isAnimateToCube; 
+    bool isFree;
+    
+    int animateCount;
+    
+    bool isInWorld;
+    
+    void setInWorld();
+    
+    btRigidBody* body ;
+    btTransform transform;
+    btQuaternion *indentityQuat;
+    btDefaultMotionState* myMotionState;
+    float *worldGLMatrix ;
+    btVector3 *linearVelocity;
+   
+    
+    int  hangFriendLock;
+    int hangfriendID;
+    float hangfriendX;
+    float hangfriendY;
+    float hangfriendZ;
+    float angle;
+};

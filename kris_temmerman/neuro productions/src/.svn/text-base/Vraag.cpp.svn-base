@@ -1,0 +1,286 @@
+//
+//  Vraag.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "Vraag.h"
+
+
+
+Vraag::Vraag()
+{
+    
+    hitCount =0;
+    
+    isTextBalon =false;
+    textBalon =new TextBalon();
+    vraagBox = new VraagBox();
+    friendID =0;
+    
+    x = ((float)rand()/RAND_MAX-0.5)*1600*4;
+    y = ((float)rand()/RAND_MAX-0.3)*400;
+    z = -((float)rand()/RAND_MAX) *500 -100;//*500-400
+    targetY =y;
+    targetZ =z;
+   
+    speed = ((float)rand()/RAND_MAX-0.5)*3;
+    while (speed<1 && speed>-1) speed = ((float)rand()/RAND_MAX-0.5)*3;
+    boxScaleZ =1.0;
+    textAlpha =0;
+    
+    renderAsText =false;
+    renderAsCube =true;
+    isAnimateToVraag =false;
+    isAnimateToCube =false;
+    isFree =true;
+    
+    boxScale =1;
+    hangfriendID=-1;
+    /*
+     fysics
+     */
+    isInWorld =false;
+    
+  
+      // body->setLinearVelocity(btVector3(btScalar(1.0),btScalar(0),btScalar(0)));
+   
+
+}
+
+void Vraag::init()
+{
+    Matrix3D *m =new Matrix3D();
+    objectMatrix =  m->getRawData();
+
+  
+    
+    textBalon->font =font;
+    textBalon->setVraag(vraagString);
+    vraagBox->setup( textBalon->rectWidth,textBalon->rectHeight,textBalon->rectHeight);
+    
+    
+    
+    
+    transform.setIdentity();
+    btScalar	mass(1.f);
+    
+    btCollisionShape* colShape ;
+    colShape   = new btBoxShape(btVector3(textBalon->rectWidth*TEXT_CUBE_SCALE,textBalon->rectHeight*TEXT_CUBE_SCALE,textBalon->rectHeight*TEXT_CUBE_SCALE));
+    
+    
+    
+    
+    
+    btVector3 localInertia(0,0,0);
+    colShape->calculateLocalInertia(mass,localInertia);
+    
+    
+    
+    myMotionState = new btDefaultMotionState(transform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
+    body = new btRigidBody(rbInfo);
+    body->setDamping(0.8,0.8);
+    body->setUserPointer((void *)this) ;
+    
+   //body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT );
+    body->setActivationState(DISABLE_DEACTIVATION);
+    
+    Matrix3D *m2 =new Matrix3D();
+    
+    worldGLMatrix  =  m2->getRawData();
+    //body->setLinearVelocity(btVector3(btScalar(1.0),btScalar(0),btScalar(0)));
+
+    
+}
+
+void Vraag::update()
+{
+  
+    if(isInWorld)
+    {
+      //  body->setLinearVelocity(*linearVelocity);
+        myMotionState->getWorldTransform(transform);
+      
+        transform.getOpenGLMatrix ( worldGLMatrix );
+        
+        objectMatrix[0] =worldGLMatrix[0];
+        objectMatrix[1] =worldGLMatrix[4];
+        objectMatrix[2] =worldGLMatrix[8];
+        objectMatrix[3] =worldGLMatrix[12];
+        
+        objectMatrix[4] =worldGLMatrix[1];
+        objectMatrix[5] =worldGLMatrix[5];
+        objectMatrix[6] =worldGLMatrix[9];
+        objectMatrix[7] =worldGLMatrix[13];
+        
+        objectMatrix[8] =worldGLMatrix[2];
+        objectMatrix[9] =worldGLMatrix[6];
+        objectMatrix[10] =worldGLMatrix[10];
+        objectMatrix[11] =worldGLMatrix[14];
+        
+        objectMatrix[12] =worldGLMatrix[3];
+        objectMatrix[13]=worldGLMatrix[7];
+        objectMatrix[14] =worldGLMatrix[11];
+        objectMatrix[15] =worldGLMatrix[15];
+    
+        
+        
+       x = objectMatrix[3] ;
+       y = objectMatrix[7] ;
+       z = objectMatrix[11];
+        
+        
+        
+        
+        return;
+    }
+    // box states 
+    if(isAnimateToCube )
+    {
+        animateCount++;
+        renderAsCube =true;
+        boxScaleZ  =((float)animateCount/50);
+        boxScale =(1-(float)animateCount/50)*2 +1;
+        textAlpha  =1- boxScaleZ;
+        
+        if(animateCount ==50)
+        {
+            boxScaleZ =1;
+            renderAsText =false;
+            isAnimateToCube  =false;
+        }
+    }
+    if(isAnimateToVraag)
+    {
+        animateCount++;
+        boxScaleZ  =1-((float)animateCount/50);
+        boxScale =((float)animateCount/100)*3;
+        if(animateCount ==50)
+        {
+        renderAsText =true;
+            renderAsCube =false;
+        }  
+        
+        if(animateCount >50)
+        {
+           
+            textAlpha = ((float)animateCount-50)/50;
+        }
+       // cout << textAlpha << " ";
+        if(animateCount ==100)
+        {
+              renderAsText =true;
+           
+            isAnimateToVraag =false; 
+        }
+    
+    }
+    if(hangfriendID != -1)
+    {
+    
+        x += (tarTextX-x)/hangFriendLock;
+        y += (tarTextY-y)/hangFriendLock;
+        z += (tarTextZ -z)/hangFriendLock;
+    
+        objectMatrix[0] =boxScale;
+        objectMatrix[5] =boxScale;
+        objectMatrix[10] =boxScaleZ*boxScale;
+        objectMatrix[3] =x;
+        objectMatrix[7] =y;
+        objectMatrix[11] =z;
+
+        return;
+    }
+    
+    if(!isTextBalon )
+    {
+        textBalon->update();
+        isTextBalon =true;
+      // 
+
+    }
+    if(isFree){
+        x+=speed;
+        if(x>1600*2)x-=1600*4;
+        if(x<-1600*2)x+=1600*4;
+    
+        y+=(targetY-y)/100;
+        
+        
+       
+        
+        if((float)rand()/RAND_MAX > 0.9995) targetY = ((float)rand()/RAND_MAX-0.3)*400;
+        if((float)rand()/RAND_MAX > 0.9995) targetZ =-((float)rand()/RAND_MAX) *500 -100;
+        float tempZ =z;
+        tempZ+=(targetZ-tempZ)/100;
+    
+        z =tempZ;
+        
+       // boxScaleMatrix[1] =(float)rand()/RAND_MAX;
+        //boxScaleMatrix[6] =(float)rand()/RAND_MAX;
+        
+        
+    }
+    else
+    {
+       //cout <<"x "<<tarTextX<< " y"<<tarTextY<<" "<<y<<" z"<< tarTextZ;
+        x += (tarTextX-x)/20;
+        y += (tarTextY-y)/20;
+        z += (tarTextZ -z)/20;
+    }
+     objectMatrix[0] =boxScale;
+     objectMatrix[5] =boxScale;
+    objectMatrix[10] =boxScaleZ*boxScale;
+    objectMatrix[3] =x;
+    objectMatrix[7] =y;
+    objectMatrix[11] =z;
+
+
+
+
+}
+void Vraag::setTextPositionToBlob( Blob friendBlob)
+{
+    tarTextX =  (friendBlob.maxX+friendBlob.minX)/2+30;
+    tarTextY = -friendBlob.minY +textBalon->pijlY+20;
+    tarTextZ = friendBlob.zSum;
+
+}
+void Vraag::setAsTextBalon()
+{
+    isFree =false;
+    isAnimateToVraag =true;
+     isAnimateToCube =false;
+     animateCount = 0;
+    
+  
+    renderAsCube =true ;
+
+
+}
+void Vraag::setAsCube()
+{
+    animateCount = 0;
+    isFree =true;
+    isAnimateToCube =true;
+     isAnimateToVraag =false;
+    targetY =y;
+    targetZ = z;
+    renderAsCube =true;
+    renderAsText =true;
+    
+    
+}
+void Vraag::setInWorld()
+{
+   
+    isInWorld =true;
+    cout <<"\n setinWorlds"<< x <<" " << y <<" "<< z <<" \n\n "; 
+    transform.setOrigin(btVector3( x,y,z));
+    myMotionState->setWorldTransform(transform);
+    body->setMotionState(myMotionState);
+    
+}

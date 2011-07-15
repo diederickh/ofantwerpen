@@ -1,0 +1,44 @@
+#pragma once
+
+#include "ofMain.h"
+#include "Constants.h"
+
+
+#import "VraagLoader.h"
+#import "VraagBuilder.h"
+
+#import "KinectHandler.h"
+#import "PersonHandler.h"
+#import "Renderer.h"
+#import "World.h"
+
+#import "MainModel.h"
+
+class testApp : public ofBaseApp {
+    
+    vector<string> vragen; // mag weg
+public:
+	
+    MainModel *mainModel;
+	void setup();
+	void update();
+	void draw();
+	void exit();
+	void getMatrix();
+	
+	void keyPressed  (int key);
+	void mouseDragged(int x, int y, int button);
+	void mousePressed(int x, int y, int button);
+	void mouseReleased(int x, int y, int button);
+	void windowResized(int w, int h);
+	
+    VraagLoader *vraagLoader;
+
+    VraagBuilder *vraagbuilder ;
+    
+    KinectHandler *kinectHandler;
+    PersonHandler *personHandler;
+    Renderer *renderer;
+    World *world; 
+	
+};

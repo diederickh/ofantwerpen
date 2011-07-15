@@ -1,0 +1,242 @@
+//
+//  PersonHandler.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/04/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "PersonHandler.h"
+
+void PersonHandler::setup(){idcount =0; nullCount =0;}
+void PersonHandler::update(){}
+//void draw();
+//void exit();
+void PersonHandler::setBlobs(vector<Blob*> blobVector)
+{
+    
+ 
+    
+    
+  
+      
+    int numBlobs =blobVector.size() ;
+   // cout << numBlobs<<"**************************************\n";
+
+    // if(numBlobs ==0 )return;
+    
+    nullCount++;
+    if(numBlobs ==0 && nullCount <5)return;
+    nullCount =0;
+    idcount++;
+    vector<Pair*> pairs;
+    
+    int numBlobsOld =blobVectorOld.size() ;
+    int i =0;
+    int j =0;
+    
+    
+    
+    for (i=0;i<numBlobs;i++)
+    {
+        blobVector[i]->id =idcount;
+  
+       blobVector[i]->r =(float)rand()/RAND_MAX;
+        blobVector[i]->g =(float)rand()/RAND_MAX;
+        blobVector[i]->b =(float)rand()/RAND_MAX;
+       for ( j=0 ;j<numBlobsOld;j++ )
+        {
+          
+           
+            // calculate score
+            // chek overlap
+            
+           // blobVector[i]->minX <  blobVectorOld[j]->maxX  && blobVector[i]->maxX >  blobVectorOld[j]->minX 
+            
+            if(blobVector[i]->minX <  blobVectorOld[j]->maxX  && blobVector[i]->maxX >  blobVectorOld[j]->minX  )
+            {
+               Pair *pair = new Pair();
+               pair->newBlob = blobVector[i];
+               pair->oldBlob =blobVectorOld[j];
+              
+              // cout << "pair: " << blobVector[i]->id << " "<<blobVectorOld[j]->id<< "\n";
+               
+               pair->score =(float) (blobVectorOld[j]->maxX -blobVector[i]->minX)/   (blobVector[i]->maxX -blobVector[i]->minX);
+                 pairs.push_back( pair );
+            }
+        
+        }
+        
+        
+    }
+  //  cout << " numPairs: "<<pairs.size() <<" \n";
+    //bubleSort(pairs);
+    
+    
+    
+    /*
+    
+    int  flag = 1;    // set flag to 1 to start first pass
+    Pair *temp;             // holding variable
+    int numLength = pairs.size(); 
+    for(i = 1; (i <= numLength) && flag; i++)
+    {
+        flag = 0;
+        for (j=0; j < (numLength -1); j++)
+        {
+            if (pairs[j+1]->score < pairs[j]->score)      // ascending order simply changes to <
+            { 
+                temp = pairs[j];             // swap elements
+                pairs[j] = pairs[j+1];
+                pairs[j+1] = temp;
+                flag = 1;               // indicates that a swap occurred.
+            }
+        }
+    }
+
+    */
+    
+    
+    
+    
+    vector<int> deleteIDVec;
+ 
+    for (i=0;i<pairs.size();i++ )
+    {
+        
+        
+        int deleteID = pairs[i]->newBlob->id ;
+        bool found =false;
+     //     cout << " startCheck \n";
+       for (j=0;j<deleteIDVec.size();j++)
+        {
+       //     cout << " delete id "<< deleteIDVec[j] <<"\n";
+            
+            if(deleteIDVec[j] == deleteID )
+            {
+                found =true;
+         //       cout << " ->delete found  "<< ""<< "\n";
+            }
+        
+        
+        }
+      
+        if (!found) {
+        float  score =pairs[i]->score;
+        
+   //  cout << "set old id" <<pairs[i]->oldBlob->id << "delete id  "<< deleteID <<"\n" ;
+        deleteIDVec.push_back(pairs[i]->oldBlob->id);
+     //   cout << "push to delete : " <<pairs[i]->oldBlob->id << "\n" ;  
+            
+        
+     //   cout << "set old id" <<pairs[i]->oldBlob->id << "delete id  "<< deleteID <<"\n" ;
+        pairs[i]->newBlob->id = pairs[i]->oldBlob->id;
+        pairs[i]->newBlob->r= pairs[i]->oldBlob->r;
+        pairs[i]->newBlob->g= pairs[i]->oldBlob->g;
+        pairs[i]->newBlob->b= pairs[i]->oldBlob->b;
+     
+        
+        
+        }
+     
+           
+    }
+ 
+    
+   /* cout << "\nids: ";
+    for (i=0;i<numBlobs;i++ )
+    {
+        cout << blobVector[i]->id << " ";
+        
+    }
+   cout << "\n ";*/
+    renderer->setBlobs(blobVector);
+    
+    renderer->personTriangleCount =triangleCount;
+    renderer->personTriangles = triangles;
+ 
+    
+   // pairs.clear();
+      
+    
+    blobVectorOld.clear();
+     
+    vector<int> oldIDVec;
+    
+    for ( i=0;i<numBlobs;i++)
+    {
+        bool found =false;
+        //     cout << " startCheck \n";
+        for (j=0;j<oldIDVec.size();j++)
+        {
+            //     cout << " delete id "<< deleteIDVec[j] <<"\n";
+            
+            if(oldIDVec[j] == blobVector[i]->id )
+            {
+                found =true;
+                //       cout << " ->delete found  "<< ""<< "\n";
+            }
+            
+            
+        }
+        
+        if (!found) {
+        
+            oldIDVec.push_back(blobVector[i]->id);
+        
+            blobVectorOld.push_back(blobVector[i]);
+        }
+    
+    }
+    //   renderer->setBlobs(blobVector);
+    
+    //renderer->setBlobs(blobVector);
+    if (MainModel::Instance()->state>1000)
+    {
+        
+        
+        world->staticCubeCount =cubeCount;
+        world->staticCubePos = cubes;
+       // world ->setBlobs(blobVector);
+    }
+    return;
+    
+  //  world ->setBlobs(blobVector);
+    
+    
+    world->staticCubeCount =cubeCount;
+    world->staticCubePos = cubes;
+    
+    
+   // blobVector.clear();
+
+
+}
+void PersonHandler::bubleSort( vector<Pair*> pairs)
+{
+    
+    int i, j, flag = 1;    // set flag to 1 to start first pass
+    Pair *temp;             // holding variable
+    int numLength = pairs.size(); 
+    for(i = 1; (i <= numLength) && flag; i++)
+    {
+        flag = 0;
+        for (j=0; j < (numLength -1); j++)
+        {
+            if (pairs[j+1]->score < pairs[j]->score)      // ascending order simply changes to <
+            { 
+                temp = pairs[j];             // swap elements
+                pairs[j] = pairs[j+1];
+                pairs[j+1] = temp;
+                flag = 1;               // indicates that a swap occurred.
+            }
+        }
+    }
+    return;
+    
+    
+}
+void PersonHandler::addPerson(int personID){}
+
+void PersonHandler::removePerson(int personID){}
+void PersonHandler::setPersonData(float* bitmapData )	{}

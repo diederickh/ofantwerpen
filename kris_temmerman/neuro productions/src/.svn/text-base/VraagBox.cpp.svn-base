@@ -1,0 +1,350 @@
+//
+//  VraagBox.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "VraagBox.h"
+
+VraagBox::VraagBox()
+{
+
+}
+
+
+
+
+void VraagBox::setup(float w,float h,float d)
+{
+    
+    int ofzet =0;
+    float w2 =w/2 *TEXT_CUBE_SCALE;
+    float h2 =h/2 *TEXT_CUBE_SCALE;
+    float d2 =d/2 *TEXT_CUBE_SCALE;
+    
+    data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+	
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+
+    /*
+     
+     
+     
+     
+     */
+    ofzetBox =0;
+    //front
+	/*
+	createFace(ofzet,
+			   -w2,-h2,d2,
+			   w2,-h2,d2,
+			   w2,h2,d2,
+			   -w2,h2,d2,0,0,1);
+	
+	//top
+	
+	createFace(ofzet,
+			   -w2,-h2,-d2,
+			   size,size,-d2,
+			   minSize,size,size,
+			   size,size,size,0,1,0);
+	
+	
+	//left
+	
+	createFace(ofzet,
+			   size,size,size,
+			   size,size,minSize,
+			   
+			   size,minSize,size,
+			   size,minSize,minSize,1,0,0);
+	
+	
+	//back
+	
+	createFace(ofzet,
+			   size,size,-d2,
+			   minSize,size,-d2,
+			   
+			   size,minSize,-d2,
+			   minSize,minSize,-d2
+			   
+			   
+			   ,0,0,-1);
+	
+	//bottom
+
+	createFace(ofzet,
+			   size,minSize,minSize,
+			   minSize,minSize,minSize,
+			   size,minSize,size,
+			   minSize,minSize,size,
+			   0,-1,0);
+	
+	
+	//right
+	
+	createFace(ofzet,
+			   minSize,size,minSize,
+			   minSize,size,size,
+			   
+			   minSize,minSize,minSize,
+			   minSize,minSize,size
+			   ,-1,0,0);
+
+    
+   */    
+
+}
+
+
+
+
+
+void VraagBox::createFace(int ofzet,float x1,float y1,float z1,float x2,float y2,float z2,float x3,float y3,float z3,float x4,float y4,float z4,float nx,float ny,float nz)
+{
+	//p1
+    /*
+	dataBox[ofzetBox] =x1 ;
+	ofzetBox++;
+	dataBox[ofzetBox] =y1;
+	ofzetBox++;
+	dataBox[ofzetBox] =z1;
+	ofzetBox++;
+    
+	dataBox[ofzetBox] =nx;
+	ofzetBox++;
+	dataBox[ofzetBox] =ny;
+	ofzetBox++;
+	dataBox[ofzetBox] =nz;
+	ofzetBox++;
+	
+
+	//p2
+	dataBox[ofzetBox] =x2;
+	ofzetBox++;
+	dataBox[ofzetBox] =y2;
+	ofzetBox++;
+	dataBox[ofzetBox] =z2;
+	ofzetBox++;
+	
+	dataBox[ofzetBox] =nx;
+	ofzetBox++;
+	dataBox[ofzetBox] =ny;
+	ofzetBox++;
+	dataBox[ofzetBox] =nz;
+	ofzetBox++;
+	
+
+	
+    
+	//p3
+	dataBox[ofzetBox] =x3;
+	ofzetBox++;
+	dataBox[ofzetBox] =y3;
+	ofzetBox++;
+	dataBox[ofzetBox] =z3;
+	ofzetBox++;
+	
+	dataBox[ofzetBox] =nx;
+	ofzetBox++;
+	dataBox[ofzetBox] =ny;
+	ofzetBox++;
+	dataBox[ofzetBox] =nz;
+	ofzetBox++;
+	
+
+	
+	//p4
+	dataBox[ofzetBox] =x4;
+	ofzetBox++;
+	dataBox[ofzetBox] =y4;
+	ofzetBox++;
+	dataBox[ofzetBox] =z4;
+	ofzetBox++;
+	
+	dataBox[ofzetBox] =nx;
+	ofzetBox++;
+	dataBox[ofzetBox] =ny;
+	ofzetBox++;
+	dataBox[ofzetBox] =nz;
+	ofzetBox++;
+    
+		*/
+	
+}

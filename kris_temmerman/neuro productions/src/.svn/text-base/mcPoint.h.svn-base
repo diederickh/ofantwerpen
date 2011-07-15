@@ -1,0 +1,24 @@
+/*
+ *  mcPoint.h
+ *  ofxKinect
+ *
+ *  Created by Kris Temmerman on 25/04/11.
+ *  Copyright 2011 Neuro Productions. All rights reserved.
+ *
+ */
+
+#pragma once
+
+
+
+class mcPoint {
+public:
+	mcPoint();
+	float x;
+	float y;
+	bool isHit;
+	
+	float xReal;
+    float yReal;
+    float zReal;
+};

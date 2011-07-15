@@ -1,0 +1,101 @@
+//
+//  Renderer.h
+//  polygonExample
+//
+//  Created by Kris Temmerman on 20/04/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#ifndef _RENDERER
+#define _RENDERER
+
+
+
+#define NUM_SPRITES 100
+
+#include <vector>
+
+#import "BackGround.h"
+#import "SpriteBase.h"
+
+
+#import "MainShaderProgram.h"
+#import "StrokeShaderProgram.h"
+#import "BoxShaderProgram.h"
+#import "TextShaderProgram.h"
+#import "PersonShaderProgram.h"
+#import "LineShaderProgram.h"
+#import "DOFShaderProgram.h"
+
+#import "Blob.h"
+#import "World.h"
+#import "Box.h"
+
+#import "Vraag.h"
+
+#import "TextBase.h"
+
+#import "MainModel.h"
+
+using namespace std;
+
+class Renderer {
+	
+private: 
+	BackGround *background ;
+  
+  
+    
+    MainShaderProgram *mainShaderProgram;
+    TextShaderProgram *textShaderProgram;
+    StrokeShaderProgram *strokeShaderProgram;
+    PersonShaderProgram *personShaderProgram;
+    BoxShaderProgram *boxShaderProgram;
+    LineShaderProgram *lineShaderProgram;
+    DOFShaderProgram *dofShaderProgram;
+    
+    vector<Blob*> blobVectorL;
+    
+    MainModel *mainModel;
+
+    float *worldMarix;
+    
+    int count;
+    
+    void bubleSort();
+    
+    float tarX;
+    float tarY;
+    float tarZ;
+    
+    
+    float posX;
+    float posY;
+    float posZ;
+    
+  
+    
+public:
+    
+    vector<Vraag*> vragen;
+    
+    int personTriangleCount ;
+    float *personTriangles ;
+    
+    
+       
+    
+    void setup();
+    void update();
+    void draw();
+    
+    
+    void setBlobData(float *strokeData);
+    void setBlobs(vector<Blob*> blobVector);
+  
+    void windowResized(int w, int h);
+	
+    World *world;
+   int  getNearestEmptyVraag(float x,float y,float z);
+};
+
+#endif

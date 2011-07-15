@@ -1,0 +1,68 @@
+//
+//  World.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 20/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#ifndef _WORLDHH
+#define _WORLDHH
+
+#include <vector>
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+#include "LinearMath/btAlignedObjectArray.h"
+
+#include <iostream>
+
+#import "Box.h"
+#import "Blob.h"
+#import "Vraag.h"
+#import "MainModel.h"
+
+#define NUM_STATIC_BOXES 750
+
+using namespace std;
+
+class World {
+	
+private: 
+    
+     btBroadphaseInterface*	m_broadphase;
+	
+ 
+    btDefaultCollisionConfiguration* m_collisionConfiguration;
+   
+   
+	btCollisionDispatcher*	m_dispatcher;
+    
+	btConstraintSolver*	m_solver;
+    
+	
+    btDiscreteDynamicsWorld *m_dynamicsWorld ;
+    btRigidBody* body ;
+    btDefaultMotionState* myMotionState;
+public:
+    MainModel *mainModel; 
+    int numBoxes;
+   
+    Box boxesStatic [NUM_STATIC_BOXES];
+    
+    bool isPerson;
+    void setup();
+    void update();
+    float count;
+     void setBlobs(vector<Blob> blobVector);
+  
+    vector<Vraag*> vragen;
+    
+    
+    
+   int staticCubeCount ;
+    float *staticCubePos;
+	
+    int currentState;
+    
+};
+
+#endif

@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/kinect/!svn/ver/5/kinectExample_t/bin/data/shaders
+END
+FlatFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/24/kinectExample_t/bin/data/shaders/FlatFragmentShader.fsh
+END
+LineFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/kinect/!svn/ver/5/kinectExample_t/bin/data/shaders/LineFragmentShader.fsh
+END
+BoxFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/kinect/!svn/ver/23/kinectExample_t/bin/data/shaders/BoxFragmentShader.fsh
+END
+PersonVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/13/kinectExample_t/bin/data/shaders/PersonVertexShader.vsh
+END
+StrokeVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/15/kinectExample_t/bin/data/shaders/StrokeVertexShader.vsh
+END
+DOFVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/kinect/!svn/ver/5/kinectExample_t/bin/data/shaders/DOFVertexShader.vsh
+END
+PersonFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/kinect/!svn/ver/23/kinectExample_t/bin/data/shaders/PersonFragmentShader.fsh
+END
+StrokeFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/kinect/!svn/ver/15/kinectExample_t/bin/data/shaders/StrokeFragmentShader.fsh
+END
+KinectVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/17/kinectExample_t/bin/data/shaders/KinectVertexShader.vsh
+END
+DOFFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/kinect/!svn/ver/5/kinectExample_t/bin/data/shaders/DOFFragmentShader.fsh
+END
+KinectFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/kinect/!svn/ver/13/kinectExample_t/bin/data/shaders/KinectFragmentShader.fsh
+END
+TextVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/kinect/!svn/ver/11/kinectExample_t/bin/data/shaders/TextVertexShader.vsh
+END
+MainVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/kinect/!svn/ver/19/kinectExample_t/bin/data/shaders/MainVertexShader.vsh
+END
+FlatVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/kinect/!svn/ver/19/kinectExample_t/bin/data/shaders/FlatVertexShader.vsh
+END
+LineVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/kinect/!svn/ver/19/kinectExample_t/bin/data/shaders/LineVertexShader.vsh
+END
+BoxVertexShader.vsh
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/kinect/!svn/ver/23/kinectExample_t/bin/data/shaders/BoxVertexShader.vsh
+END
+TextFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/11/kinectExample_t/bin/data/shaders/TextFragmentShader.fsh
+END
+MainFragmentShader.fsh
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/kinect/!svn/ver/19/kinectExample_t/bin/data/shaders/MainFragmentShader.fsh
+END

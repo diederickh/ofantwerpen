@@ -1,0 +1,283 @@
+//
+//  KinectShaderProgram.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 13/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "KinectShaderProgram.h"
+
+enum {
+	ATTRIB_VERTEX
+	
+};
+
+KinectShaderProgram::KinectShaderProgram ()
+{
+    
+    ShaderUtil *su =new ShaderUtil;
+	vShader =su->getShader("shaders/KinectVertexShader.vsh",GL_VERTEX_SHADER );
+	
+	fShader =su->getShader("shaders/KinectFragmentShader.fsh",GL_FRAGMENT_SHADER );
+	program = glCreateProgram();	
+	free (su);
+	
+	glAttachShader(program,vShader);
+	glAttachShader(program,fShader);
+    
+	glLinkProgram(program);
+	
+	GLint linked;
+	
+	glGetProgramiv(program,GL_LINK_STATUS, &linked);
+	if (!linked)
+	{
+		
+		GLint logLength;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+		
+		if (logLength > 0)
+		{
+			GLchar *log = (GLchar *)malloc(logLength);
+			glGetProgramInfoLog(program, logLength, &logLength, log);
+			cout <<"backProgram log: "<< log;
+			free(log);
+		}
+		
+		
+		
+	}
+
+	glUseProgram(program);
+	
+	glBindAttribLocation(program, ATTRIB_VERTEX, "position");
+
+    worldMatrixLocation =glGetUniformLocation(program, "worldMatrix");
+    perspMatrixLocation =glGetUniformLocation(program, "perspMatrix");
+    
+    GLint  rotationMatrixLocation =glGetUniformLocation(program, "rotationKinectMatrix");   
+    Matrix3D *mr=new Matrix3D();
+    mr->rotate(KINECT_START_ANGLE,1,0,0);
+     perspectiveMatrix =  mr->getRawData();
+    
+    
+    glUniformMatrix4fv(rotationMatrixLocation,16, 0, perspectiveMatrix);
+    verh =2;
+    m  =new Matrix3D;
+    perspectiveisDirty =false;
+   
+    
+    perspectiveMatrix =  m->getRawData();
+   
+    
+     /*perspectiveMatrix[0] =2.0/600;
+     perspectiveMatrix[1] =0.0;
+     perspectiveMatrix[2] =0.0;
+     perspectiveMatrix[3] =-1;
+    
+     perspectiveMatrix[4] =0.0;
+     perspectiveMatrix[5] =-2.0/300;
+     perspectiveMatrix[6] =0.0;
+   perspectiveMatrix[7] =1;
+    
+     perspectiveMatrix[8] =0.0;
+     perspectiveMatrix[9] =0.0;
+     perspectiveMatrix[10] =-1;
+    perspectiveMatrix[11] =0.0;
+    
+     perspectiveMatrix[12] =0.0;
+     perspectiveMatrix[13] =0.0;
+     perspectiveMatrix[14] =0.0;
+     perspectiveMatrix[15] =1;*/    
+ 
+     
+     perspectiveMatrix[0] =1.0/500;
+     perspectiveMatrix[1] =0.0;
+     perspectiveMatrix[2] =0.0;
+     perspectiveMatrix[3] =0;
+     
+     perspectiveMatrix[4] =0.0;
+     perspectiveMatrix[5] =1.0/180;
+     perspectiveMatrix[6] =0.0;
+     perspectiveMatrix[7] =0;
+     
+     perspectiveMatrix[8] =0.0;
+     perspectiveMatrix[9] =0.0;
+     perspectiveMatrix[10] =1.0/6000;
+     perspectiveMatrix[11] =-1;
+     
+     perspectiveMatrix[12] =0.0;
+     perspectiveMatrix[13] =0.0;
+     perspectiveMatrix[14] =0.0;
+     perspectiveMatrix[15] =1;
+    
+ /*  glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //glTranslated(20,25,30);
+    glOrtho(-400,400,180,-180,0,6000);
+    float matrix[ 16 ];
+    float fMatrix[ 16 ];
+    glGetFloatv( GL_PROJECTION_MATRIX, perspectiveMatrix );*/
+    
+    
+    glUniformMatrix4fv(perspMatrixLocation,16, 0, perspectiveMatrix);
+  
+    
+
+    Matrix3D *m2 =new Matrix3D;
+    m2->identity();
+    worldMatrixRight =m2->getRawData();
+    Matrix3D *m3 =new Matrix3D;
+    m3->identity();
+    worldMatrixLeft = m3->getRawData();
+ 
+    
+    
+    
+    
+    
+  
+    float fMatrix[ 16 ];
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    ofRotateY(-KINECT_ROTATION2) ;
+     ofRotateX(KINECT_START_ANGLE) ;
+    ofTranslate(-27,KINECT_START_HEIGHT,0) ;
+    
+    glGetFloatv( GL_PROJECTION_MATRIX, fMatrix );
+    
+    
+    
+    worldMatrixRight[0] =fMatrix[0];
+    worldMatrixRight[1] =fMatrix[4];
+    worldMatrixRight[2] =fMatrix[8];
+    worldMatrixRight[3] =fMatrix[12];
+    
+    worldMatrixRight[4] =fMatrix[1];
+    worldMatrixRight[5] =fMatrix[5];
+    worldMatrixRight[6] =fMatrix[9];
+    worldMatrixRight[7] =fMatrix[13];
+    
+    worldMatrixRight[8] =fMatrix[2];
+    worldMatrixRight[9] =fMatrix[6];
+    worldMatrixRight[10] =fMatrix[10];
+    worldMatrixRight[11] =fMatrix[14];
+    
+    worldMatrixRight[12] =fMatrix[3];
+    worldMatrixRight[13]=fMatrix[7];
+    worldMatrixRight[14] =fMatrix[11];
+    worldMatrixRight[15] =fMatrix[15];
+    
+    
+    
+    glLoadIdentity();
+    ofRotateY(KINECT_ROTATION2) ;
+    ofRotateX(KINECT_START_ANGLE) ;
+    ofTranslate(0,KINECT_START_HEIGHT,0) ;
+    
+    glGetFloatv( GL_PROJECTION_MATRIX, fMatrix );
+    
+    worldMatrixLeft[0] =fMatrix[0];
+     worldMatrixLeft[1] =fMatrix[4];
+    worldMatrixLeft[2] =fMatrix[8];
+     worldMatrixLeft[3] =fMatrix[12];
+    
+     worldMatrixLeft[4] =fMatrix[1];
+     worldMatrixLeft[5] =fMatrix[5];
+     worldMatrixLeft[6] =fMatrix[9];
+     worldMatrixLeft[7] =fMatrix[13];
+    
+    worldMatrixLeft[8] =fMatrix[2];
+     worldMatrixLeft[9] =fMatrix[6];
+     worldMatrixLeft[10] =fMatrix[10];
+     worldMatrixLeft[11] =fMatrix[14];
+    
+     worldMatrixLeft[12] =fMatrix[3];
+     worldMatrixLeft[13]=fMatrix[7];
+     worldMatrixLeft[14] =fMatrix[11];
+     worldMatrixLeft[15] =fMatrix[15];
+    
+    
+    
+  /*
+    
+     worldMatrixRight[0] =1.0/400;
+     worldMatrixRight[1] =0.0;
+     worldMatrixRight[2] =0.0;
+     worldMatrixRight[3] =0;
+    
+     worldMatrixRight[4] =0.0;
+     worldMatrixRight[5] =-1.0/180;
+     worldMatrixRight[6] =0.0;
+    worldMatrixRight[7] =0;
+    
+    perspectiveMatrix[8] =0.0;
+    perspectiveMatrix[9] =0.0;
+    perspectiveMatrix[10] =-1.0/6000;
+    perspectiveMatrix[11] =-1;
+    
+    perspectiveMatrix[12] =0.0;
+    perspectiveMatrix[13] =0.0;
+    perspectiveMatrix[14] =0.0;
+    perspectiveMatrix[15] =1;
+
+    
+    
+    0.939693 0 -0.34202 0 
+    0 1 0 0 
+    0.34202 0 0.939693 0 
+    0 0 0 1*/
+    	
+    
+}
+
+void KinectShaderProgram::enable  ()
+{
+   
+    glUseProgram(program);
+  
+   
+    
+   
+    
+}
+void KinectShaderProgram::setMatrix(bool isRight)
+{
+    if(!isRight)
+    {
+        
+        glUniformMatrix4fv(worldMatrixLocation,16, 0, worldMatrixRight);
+    }else
+    {
+    
+        
+        glUniformMatrix4fv(worldMatrixLocation,16, 0, worldMatrixLeft);    
+    }
+
+
+}
+void KinectShaderProgram::renderData(float *data,int size)
+{
+    
+   GLfloat *vtxBuffer =data ;
+   
+
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, 0, 3*sizeof(GLfloat), data);
+   
+    glDrawArrays(GL_TRIANGLES, 0, size);
+    
+    
+}
+
+
+
+
+void KinectShaderProgram::disable  ()
+{
+    //glDisable(GL_DEPTH_TEST);
+    
+    
+}

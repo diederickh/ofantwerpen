@@ -1,0 +1,22 @@
+//
+//  Pair.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All 
+
+#import "Blob.h" 
+
+class Pair
+{
+
+    public :
+    
+    Pair();
+    Blob *newBlob;
+    Blob *oldBlob;
+    float score;
+    
+    
+
+};

@@ -1,0 +1,11 @@
+//
+//  Pair.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "Pair.h"
+
+Pair::Pair(){}

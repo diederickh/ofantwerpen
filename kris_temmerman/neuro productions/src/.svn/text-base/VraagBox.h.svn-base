@@ -1,0 +1,42 @@
+//
+//  VraagBox.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 29/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#ifndef VRAAG_BOX
+#define VRAAG_BOX
+
+
+
+
+#include <iostream>
+#include "Constants.h";
+using namespace std;
+
+class VraagBox {
+	
+private: 
+    float width;
+    float height;
+    float depth;
+    
+   
+public:
+    
+    VraagBox();
+    void createFace(int ofzet,float x1,float y1,float z1,float x2,float y2,float z2,float x3,float y3,float z3,float x4,float y4,float z4,float nx,float ny,float nz);
+   
+    float data[72] ;
+    float dataBox;
+    int ofzetBox;
+    
+    
+    void setup(float w,float h,float d);
+   
+    
+    
+};
+
+#endif

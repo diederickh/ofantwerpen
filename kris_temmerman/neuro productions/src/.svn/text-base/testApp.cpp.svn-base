@@ -1,0 +1,239 @@
+#include "testApp.h"
+#include "btBulletDynamicsCommon.h"
+
+//--------------------------------------------------------------
+void testApp::setup() {
+	
+   
+   /* myfont.loadFont("Interstate Bold.ttf", 25,true,true,false);  
+    myfont.setLineHeight(30);
+    
+    */
+    
+   
+    
+    mainModel =  MainModel::Instance();
+    mainModel->state =START_STATE;
+    
+    
+    ofSetFrameRate(60);
+    
+    // laad vragen
+   
+    vraagLoader =new VraagLoader();
+    
+    vragen = vraagLoader->loadVragen ();
+    vraagbuilder =new VraagBuilder(vragen);
+    
+   renderer =new Renderer();
+    renderer->vragen =vraagbuilder->vragen;
+    
+    renderer->setup();
+    
+    
+    
+    kinectHandler =new KinectHandler();
+    kinectHandler->setup();
+    
+    personHandler  =new PersonHandler();
+    personHandler->setup();
+    
+    kinectHandler->setPersonHandler(personHandler);
+    
+    personHandler->renderer =renderer;
+    
+    
+    world =new World();
+    world->vragen =vraagbuilder->vragen;
+    world->setup();
+     personHandler->world=world;
+    
+    return;
+	
+    
+   
+    
+    world =new World();
+    
+    world->setup();
+    //ofToggleFullscreen();
+    
+    //
+    kinectHandler =new KinectHandler();
+    kinectHandler->setup();
+    
+    personHandler  =new PersonHandler();
+    personHandler->setup();
+    
+    kinectHandler->setPersonHandler(personHandler);
+    
+    renderer =new Renderer();
+   renderer->world = world;
+    
+    renderer->setup();
+    personHandler->renderer =renderer;
+    
+       }
+
+//--------------------------------------------------------------
+void testApp::update() {
+	
+    
+    
+     renderer->update();
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,0);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glUseProgram(0);
+	ofBackground(0,0,0);
+    
+    
+    
+    kinectHandler->update();
+    if(mainModel->state >1000)world->update();
+    
+    
+	}
+
+//--------------------------------------------------------------
+void testApp::draw() {
+   
+
+ renderer->draw();   
+    if (DEBUG_KRIS)kinectHandler->draw();
+   
+  /*  ofVie
+    char fpsStr[255]; // an array of chars
+    sprintf(fpsStr, "frame rate: %f", ofGetFrameRate());
+    myfont.drawString(fpsStr, 20,20);*/
+    
+   // cout <<"  " <<ofGetFrameRate();
+    
+	return;
+  // getMatrix();
+ 
+if (DEBUG_KRIS)kinectHandler->draw();
+    
+  
+    
+    world->update();
+}
+
+void testApp::getMatrix()
+{
+
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //glTranslated(20,25,30);
+   // glOrtho(-400,400,180,-180,0,6000);
+    
+   
+    ofRotateY(-20) ;
+    ofTranslate(0,0,0) ;
+
+    
+    
+    float matrix[ 16 ];
+    float fMatrix[ 16 ];
+    glGetFloatv( GL_PROJECTION_MATRIX, fMatrix );
+    matrix[0] =fMatrix[0];
+    matrix[1] =fMatrix[4];
+    matrix[2] =fMatrix[8];
+    matrix[3] =fMatrix[12];
+    
+    matrix[4] =fMatrix[1];
+    matrix[5] =fMatrix[5];
+    matrix[6] =fMatrix[9];
+    matrix[7] =fMatrix[13];
+    
+    matrix[8] =fMatrix[2];
+    matrix[9] =fMatrix[6];
+    matrix[10] =fMatrix[10];
+    matrix[11] =fMatrix[14];
+    
+    matrix[12] =fMatrix[3];
+    matrix[13]=fMatrix[7];
+    matrix[14] =fMatrix[11];
+    matrix[15] =fMatrix[15];
+    
+    cout<<" \n";
+    cout  << matrix[0] <<" " << matrix[1] <<" "<< matrix[2] <<" "<< matrix[3] <<" \n";
+    cout  << matrix[4] <<" " << matrix[5] <<" "<< matrix[6] <<" "<< matrix[7] <<" \n";
+    cout  << matrix[8] <<" " << matrix[9] <<" "<< matrix[10] <<" "<< matrix[11] <<" \n";
+    cout  << matrix[12] <<" " << matrix[13] <<" "<< matrix[14] <<" "<< matrix[15] <<" \n";
+
+
+}
+
+//--------------------------------------------------------------
+void testApp::exit() {
+      kinectHandler->exit();
+	
+}
+
+//--------------------------------------------------------------
+void testApp::keyPressed (int key) {
+	switch (key) {
+		case 'f':
+			ofToggleFullscreen();
+			break;
+        case 's':
+            
+            if(mainModel->state ==START_STATE)
+            {
+                mainModel->state=ATTRACT_STATE;           
+            }
+            else if (mainModel->state ==ATTRACT_STATE)
+            {
+                mainModel->state =KILL_ATRACT_STATE  ;          
+            }
+          
+            else if (mainModel->state ==KILL_ATRACT_STATE)
+            {
+                mainModel->state =ROTATE_STATE  ;          
+            }
+            else if (mainModel->state ==ROTATE_STATE )
+            {
+                mainModel->state =KILL_ROTATE_STATE  ;          
+            }
+            else if (mainModel->state ==KILL_ROTATE_STATE)
+            {
+                mainModel->state =BUMB_STATE   ;       
+            }
+            
+            cout <<  mainModel->state;
+            
+/*
+#define START_STATE 1
+#define ATTRACT_STATE 100
+#define KILL_ATRACT_STATE 101
+            
+#define BUMB_STATE 1001
+            
+            
+			  mainModel->state =900;*/
+			break;
+	}
+}
+
+
+//--------------------------------------------------------------
+void testApp::mouseDragged(int x, int y, int button)
+{}
+
+//--------------------------------------------------------------
+void testApp::mousePressed(int x, int y, int button)
+{}
+
+//--------------------------------------------------------------
+void testApp::mouseReleased(int x, int y, int button)
+{}
+
+//--------------------------------------------------------------
+void testApp::windowResized(int w, int h)
+{
+
+    renderer->windowResized(w, h);
+}
+

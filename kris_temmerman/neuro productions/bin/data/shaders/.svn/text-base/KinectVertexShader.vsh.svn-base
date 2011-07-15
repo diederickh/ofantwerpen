@@ -1,0 +1,33 @@
+
+  
+//
+//
+//  Created by Kris Temmerman on 29/11/10.
+//  Copyright 2010 Neuro Productions. All rights reserved.
+//
+
+
+uniform mat4 worldMatrix;
+uniform mat4 perspMatrix;
+uniform mat4 rotationKinectMatrix;
+attribute vec4 position;
+
+
+
+
+varying float z;
+
+
+void main()
+{
+	
+	
+	vec4 worldspace =position*worldMatrix;
+    
+    z = worldspace.z/800.0 +0.004;
+    vec4 test =vec4 (0.0,0.0,z,0.0);
+    test =test *rotationKinectMatrix;
+    z =test.z;
+    gl_Position =worldspace*perspMatrix ;
+    
+}

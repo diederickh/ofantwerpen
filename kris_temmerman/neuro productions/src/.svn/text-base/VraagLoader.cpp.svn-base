@@ -1,0 +1,67 @@
+//
+//  TextLoader.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "VraagLoader.h"
+
+
+VraagLoader::VraagLoader()
+{
+
+}
+
+
+vector <string> VraagLoader::loadVragen()
+{
+
+    vector<string> values;
+    
+    
+    
+    string shaderPath  = ofToDataPath("vragen.xml");
+	char *path =(char*)   shaderPath.data();
+	
+	
+	
+
+    
+    InputSource src(path );
+	try
+	{
+		DOMParser parser;
+		AutoPtr<Document> pDoc = parser.parse(&src);
+        
+		NodeIterator it(pDoc, NodeFilter::SHOW_ALL);
+        
+		Node* pNode = it.nextNode();
+		while (pNode)
+		{
+            
+            if(pNode->nodeName() =="#cdata-section")
+            {
+                string  mijnstring ;   
+                mijnstring    =  (string)pNode->nodeValue() ;
+              // cout << mijnstring<< " -" ;
+                values.push_back(mijnstring);
+            
+            }
+            pNode = it.nextNode();
+		}
+	}
+	catch (Exception& exc)
+	{
+		std::cerr << exc.displayText() << std::endl;
+	}
+
+            
+    return values;   
+        
+        
+        
+        
+        
+}

@@ -1,0 +1,44 @@
+//
+//  VraagLoader.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#pragma once
+
+#include "Poco/DOM/DOMParser.h"
+#include "Poco/DOM/Document.h"
+#include "Poco/DOM/NodeIterator.h"
+#include "Poco/DOM/NodeFilter.h"
+#include "Poco/DOM/AutoPtr.h"
+#include "Poco/SAX/InputSource.h"
+#include "Poco/Exception.h"
+#include <iostream>
+#include "ofMain.h"
+#include <vector> 
+
+
+using Poco::XML::DOMParser;
+using Poco::XML::InputSource;
+using Poco::XML::Document;
+using Poco::XML::NodeIterator;
+using Poco::XML::NodeFilter;
+using Poco::XML::Node;
+using Poco::XML::AutoPtr;
+using Poco::Exception;
+
+
+using namespace std;
+class VraagLoader 
+{
+
+
+
+public:
+    VraagLoader();
+    vector <string> loadVragen();
+    
+
+
+};

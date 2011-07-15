@@ -1,0 +1,11 @@
+ply
+format ascii 1.0
+comment author: roxlu
+comment object: auto generator with openFrameworks
+element vertex 0
+property float32 x
+property float32 y
+property float32 z
+element face 0
+property list uchar int vertex_indices 
+end_header

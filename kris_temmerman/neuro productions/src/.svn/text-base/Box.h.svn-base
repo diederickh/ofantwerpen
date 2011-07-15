@@ -1,0 +1,47 @@
+//
+//  Box.h
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 20/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+#ifndef _BOX
+#define _BOX
+
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+
+
+#include <iostream>
+
+using namespace std;
+
+class Box {
+	
+    private: 
+    float width;
+    float height;
+    float depth;
+
+    btTransform transform;
+    btQuaternion *indentityQuat;
+    btDefaultMotionState* myMotionState;
+public:
+    
+    Box();
+    
+    btRigidBody* body ;
+    float *matrix ;
+    float *fMatrix ;
+    float data[72] ;
+    
+    void setup(float x,float y,float z,float w,float h,float d,bool isStatic);
+     void setPosition(float x,float y,float z);
+    void update();
+ 
+    bool isInWorld;
+    
+
+};
+
+#endif

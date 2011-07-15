@@ -1,0 +1,36 @@
+//
+//  VraagBuilder.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 28/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "VraagBuilder.h"
+
+
+VraagBuilder::VraagBuilder(vector<string> vragenString)
+{
+   
+    font.loadFont(TBFONT, TBFONT_SIZE,true,true,false);  
+    font.setLineHeight(TBFONT_LINEHEIGTH);
+    
+    int i;
+    int numVragen = vragenString.size();
+    
+    for (i =0; i<numVragen; i++)
+    {
+        Vraag *vraag =new Vraag();
+        vraag->vraagString = vragenString[i];
+        vraag->id =i;
+        vraag->font =&font;
+        vraag->init(); 
+        
+        vragen.push_back(vraag);
+    
+    }
+ 
+
+
+
+}

@@ -1,0 +1,363 @@
+//
+//  Box.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 20/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "Box.h"
+#import "Matrix3D.h"
+
+ Box::Box()
+{
+    indentityQuat =new btQuaternion(btScalar(0),btScalar(0),btScalar(0));
+  
+
+
+}
+void Box::setPosition(float x,float y,float z)
+{
+    
+    //
+    
+    transform.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z)));
+    
+    
+    myMotionState->setWorldTransform(transform);
+    body->setMotionState(myMotionState);
+    
+  transform.getOpenGLMatrix ( fMatrix );
+    matrix[0] =fMatrix[0];
+    matrix[1] =fMatrix[4];
+    matrix[2] =fMatrix[8];
+    matrix[3] =fMatrix[12];
+    
+    matrix[4] =fMatrix[1];
+    matrix[5] =fMatrix[5];
+    matrix[6] =fMatrix[9];
+    matrix[7] =fMatrix[13];
+    
+    matrix[8] =fMatrix[2];
+    matrix[9] =fMatrix[6];
+    matrix[10] =fMatrix[10];
+    matrix[11] =fMatrix[14];
+    
+    matrix[12] =fMatrix[3];
+    matrix[13]=fMatrix[7];
+    matrix[14] =fMatrix[11];
+    matrix[15] =fMatrix[15];
+    
+    /*  cout<<" \n";
+     cout  << matrix[0] <<" " << matrix[1] <<" "<< matrix[2] <<" "<< matrix[3] <<" \n";
+     cout  << matrix[4] <<" " << matrix[5] <<" "<< matrix[6] <<" "<< matrix[7] <<" \n";
+     cout  << matrix[8] <<" " << matrix[9] <<" "<< matrix[10] <<" "<< matrix[11] <<" \n";
+     cout  << matrix[12] <<" " << matrix[13] <<" "<< matrix[14] <<" "<< matrix[15] <<" \n";*/
+    
+
+}
+void Box::setup(float x,float y,float z,float w,float h,float d,bool isStatic)
+{
+    isInWorld =false;
+  
+    width = w;
+    height =h;
+    depth =d;
+    
+    btCollisionShape* colShape ;
+    
+    
+   transform.setIdentity();
+     btScalar	mass(1.f);
+    if(isStatic){
+      btScalar	mass(0.f);
+        colShape = new btSphereShape(btScalar( 2.5));
+    }else
+    {
+        btScalar	mass(1.f);
+        colShape   = new btBoxShape(btVector3(w,h,d));
+        
+    
+    }
+    //rigidbody is dynamic if and only if mass is non zero, otherwise static
+    bool isDynamic = (mass != 0.f);
+    
+    btVector3 localInertia(0,0,0);
+    if (isDynamic)
+        colShape->calculateLocalInertia(mass,localInertia);
+    
+   transform.setOrigin(btVector3( x,y,z));
+   
+    
+    //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+    myMotionState = new btDefaultMotionState(transform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
+    body = new btRigidBody(rbInfo);
+    body->setDamping(btScalar(0.1),btScalar(0.1));
+    
+    if(isStatic)
+    {
+        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT );
+        body->setActivationState(DISABLE_DEACTIVATION);
+        body->setLinearVelocity(btVector3(btScalar(1.0),btScalar(0),btScalar(0)));
+    }
+    
+    float w2 =w/2;
+    float h2 =h/2;
+    float d2 =d/2;
+    int ofzet =0;
+    
+    
+    
+    
+    Matrix3D *m =new Matrix3D();
+    m->translate(x, y,z);
+    matrix = m->getRawData();
+    
+   
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+	
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =w2;
+	ofzet++;
+	data[ofzet] =-h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+    
+	
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =-d2;
+	ofzet++;
+    
+	data[ofzet] =-w2;
+	ofzet++;
+	data[ofzet] =h2;
+	ofzet++;
+	data[ofzet] =d2;
+	ofzet++;
+
+  
+  
+    matrix = m->getRawData();
+    
+    Matrix3D *m2 =new Matrix3D();
+  
+    fMatrix =  m2->getRawData();
+
+}
+
+void Box::update(){
+    return;
+   myMotionState->getWorldTransform(transform);
+   	
+   
+       body->setLinearVelocity(btVector3(btScalar(30.0),btScalar(0),btScalar(0)));
+    btVector3 pos = transform.getOrigin();
+     /*btQuaternion rot = transform.getRotation();
+      transform.setRotation(rot.slerp (*indentityQuat, 0.1));
+    myMotionState->setWorldTransform(transform);
+    body->setMotionState(myMotionState);
+*/
+    if(pos.x()>800)
+    {
+    
+        setPosition(pos.x()-1600,pos.y(),pos.z());
+    }
+ 
+   /*cout<<"------- \n ";
+    cout  << matrix[0] <<" " << matrix[1] <<" "<< matrix[2] <<" "<< matrix[3] <<" \n";
+    cout  << matrix[4] <<" " << matrix[5] <<" "<< matrix[6] <<" "<< matrix[7] <<" \n";
+    cout  << matrix[8] <<" " << matrix[9] <<" "<< matrix[10] <<" "<< matrix[11] <<" \n";
+    cout  << matrix[12] <<" " << matrix[13] <<" "<< matrix[14] <<" "<< matrix[15] <<" \n";
+*/   
+    transform.getOpenGLMatrix ( fMatrix );
+    
+    matrix[0] =fMatrix[0];
+     matrix[1] =fMatrix[4];
+     matrix[2] =fMatrix[8];
+     matrix[3] =fMatrix[12];
+    
+    matrix[4] =fMatrix[1];
+    matrix[5] =fMatrix[5];
+    matrix[6] =fMatrix[9];
+    matrix[7] =fMatrix[13];
+    
+    matrix[8] =fMatrix[2];
+    matrix[9] =fMatrix[6];
+    matrix[10] =fMatrix[10];
+    matrix[11] =fMatrix[14];
+    
+    matrix[12] =fMatrix[3];
+    matrix[13]=fMatrix[7];
+    matrix[14] =fMatrix[11];
+    matrix[15] =fMatrix[15];
+    
+  /*   cout<<" \n";
+   cout  << matrix[0] <<" " << matrix[1] <<" "<< matrix[2] <<" "<< matrix[3] <<" \n";
+    cout  << matrix[4] <<" " << matrix[5] <<" "<< matrix[6] <<" "<< matrix[7] <<" \n";
+    cout  << matrix[8] <<" " << matrix[9] <<" "<< matrix[10] <<" "<< matrix[11] <<" \n";
+    cout  << matrix[12] <<" " << matrix[13] <<" "<< matrix[14] <<" "<< matrix[15] <<" \n";
+    */
+  /*  cout<<" \n";
+    cout  << fMatrix[0] <<" " << fMatrix[1] <<" "<< fMatrix[2] <<" "<< fMatrix[3] <<" \n";
+    cout  << fMatrix[4] <<" " << fMatrix[5] <<" "<< fMatrix[6] <<" "<< fMatrix[7] <<" \n";
+    cout  << fMatrix[8] <<" " << fMatrix[9] <<" "<< fMatrix[10] <<" "<< fMatrix[11] <<" \n";
+    cout  << fMatrix[12] <<" " << fMatrix[13] <<" "<< fMatrix[14] <<" "<< fMatrix[15] <<" \n";*/
+    
+}

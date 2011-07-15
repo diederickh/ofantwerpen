@@ -1,0 +1,294 @@
+//
+//  World.cpp
+//  ofxKinect
+//
+//  Created by Kris Temmerman on 20/05/11.
+//  Copyright 2011 Neuro Productions. All rights reserved.
+//
+
+#include "World.h"
+
+#define ARRAY_SIZE_X 1
+#define ARRAY_SIZE_Y 1
+#define ARRAY_SIZE_Z 1
+
+//maximum number of objects (and allow user to shoot additional boxes)
+#define MAX_PROXIES (ARRAY_SIZE_X*ARRAY_SIZE_Y*ARRAY_SIZE_Z + 1024)
+
+///scaling of the objects (0.1 = 20 centimeter boxes )
+#define SCALING 1.
+#define START_POS_X -5
+#define START_POS_Y -5
+#define START_POS_Z -3
+
+void World::setup()
+{
+ 
+    currentState  =-1;
+    mainModel = MainModel::Instance();
+    staticCubeCount =0;
+       
+    m_broadphase = new btDbvtBroadphase();
+    
+    m_collisionConfiguration = new btDefaultCollisionConfiguration();
+    m_dispatcher = new	btCollisionDispatcher(m_collisionConfiguration);
+    
+	m_broadphase = new btDbvtBroadphase();
+  
+	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+	btSequentialImpulseConstraintSolver* sol = new btSequentialImpulseConstraintSolver;
+	m_solver = sol;
+    
+	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_broadphase,m_solver,m_collisionConfiguration);
+	
+	m_dynamicsWorld->setGravity(btVector3(0,0,0));
+    
+       int i;
+ /*
+    for (i=0;i<NUM_BOXES;i++)
+    {
+        float x = ((float)rand()/RAND_MAX-0.5)*800*2;
+        float y = ((float)rand()/RAND_MAX-0.5)*200;
+        float z =(-((float)rand()/RAND_MAX) *500 -100);//*500-400
+        
+        float w = ((50.0 +((float)rand()/RAND_MAX)*50))/2;
+        float h  =((20.0+((float)rand()/RAND_MAX)*10))/2;
+        float d =h;
+        
+        boxes[i].setup(x,y,z,w,h,d,false);
+    
+        m_dynamicsWorld->addRigidBody( boxes[i].body);
+    }*/
+    for (i=0;i<NUM_STATIC_BOXES;i++)
+    {
+        float x = ((float)rand()/RAND_MAX-0.5)*800*4;
+        float y = ((float)rand()/RAND_MAX-0.5)*250;
+        float z =(-((float)rand()/RAND_MAX) *500 -100);//*500-400
+        
+        float w = 10;
+        float h  =10;
+        float d =h;
+        
+        boxesStatic[i].setup(x,y,z,w,h,d,true);
+        
+        //m_dynamicsWorld->addRigidBody( boxesStatic[i].body);
+    }
+    
+    
+     count =0;
+}
+
+void  World::setBlobs(vector<Blob> blobVector)
+{
+    int numBlobs  = blobVector.size();
+    
+   
+}
+
+
+void World::update()
+{
+  
+    if(staticCubeCount <0 || staticCubeCount> NUM_STATIC_BOXES )return;
+    int i;
+    /*
+     
+     STATE HANDELING
+     
+     */
+    
+    //BUMB STATE
+    /////////////////////////////////////////////////////////
+    //setup
+    if(mainModel->state ==BUMB_STATE  && currentState !=BUMB_STATE )
+    {
+        // add vragen to world
+       
+        
+        for (i=0;i <30;i++)
+        {
+           
+            if(vragen[i]->friendID ==0){
+                m_dynamicsWorld->addRigidBody( vragen[i]->body);
+
+                vragen[i]->body->setDamping(0.1,0.8);
+                vragen[i]->setInWorld();
+                btVector3 *bv =new btVector3(0,0,0 );
+              
+                
+                vragen[i]->linearVelocity  =bv ;
+            
+            }
+            
+        
+        
+        }
+        
+        
+        currentState = BUMB_STATE;    
+    }
+    //loop
+    if (currentState ==BUMB_STATE )
+    {
+         //cout << vragen.size();
+        if(staticCubeCount ==0)return;
+        
+        for (i=0;i <30;i++)
+        {
+            if((float)rand()/RAND_MAX > 0.99)
+            {
+                int r  =rand()%staticCubeCount ;
+                btVector3 current =vragen[i]->body->getLinearVelocity();
+               // cout<< current.length() << "set \n";
+                
+               if(current.length()>100)continue;
+                
+                //cout<<  staticCubePos[r*3]<<" " << staticCubePos[r*3+1]<<" " <<staticCubePos[r*3+2];
+                btVector3 *bv =new btVector3(staticCubePos[r*3]- vragen[i]->x,staticCubePos[r*3+1]-vragen[i]->y,staticCubePos[r*3+2]-vragen[i]->z );
+               bv->normalize();
+                bv->setX(bv->getX()*200);
+                bv->setY(bv->getY()*200);
+                bv->setZ(bv->getZ()*200);
+            vragen[i]->linearVelocity  =bv ;
+                vragen[i]->body->setDamping(0.1,0.8);
+              vragen[i]->body->setLinearVelocity(*bv );
+            }
+             /*   cout << vragen[i]->linearVelocity->getX() << " "<< vragen[i]->linearVelocity->getY() << " "<< vragen[i]->linearVelocity->getZ() << " ";
+           vragen[i]->body->setLinearVelocity(*vragen[i]->linearVelocity );*/
+            
+            
+            
+            
+            
+        }
+
+    
+    
+    
+    
+    }
+    
+    
+    
+    
+    /////////////////////////////////////////////////////////
+    
+    
+    
+    
+    for (i=0;i<staticCubeCount;i++)
+    {
+        
+        boxesStatic[i].setPosition(staticCubePos[i*3],staticCubePos[i*3 +1],staticCubePos[i*3 +2]);
+        if(!boxesStatic[i].isInWorld)
+        {
+        m_dynamicsWorld->addRigidBody( boxesStatic[i].body);
+            boxesStatic[i].isInWorld =true;
+        
+        }
+        
+        
+    }
+    
+    
+    for (i=staticCubeCount;i<NUM_STATIC_BOXES;i++)
+    {
+        
+        if(boxesStatic[i].isInWorld)
+        {
+            m_dynamicsWorld->removeRigidBody( boxesStatic[i].body);
+           
+            
+        }
+
+        
+        
+    }
+    
+    
+     m_dynamicsWorld->stepSimulation(1.0f/60);
+    
+    
+    int numManifolds =  m_dynamicsWorld->getDispatcher()->getNumManifolds();
+	for (int i=0;i<numManifolds;i++)
+	{
+		btPersistentManifold* contactManifold =   m_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+        
+		int numContacts = contactManifold->getNumContacts();
+		for (int j=0;j<numContacts;j++)
+		{
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			if (pt.getDistance()<0.f && pt.getLifeTime ( ) ==1)
+			{
+                //cout <<" life " << pt.getLifeTime ( ) ;
+				/*const btVector3& ptA = pt.getPositionWorldOnA();
+				const btVector3& ptB = pt.getPositionWorldOnB();
+				const btVector3& normalOnB = pt.m_normalWorldOnB;*/
+                
+                if( obA->getUserPointer() !=NULL  )
+                {
+                    
+                    Vraag *vraag = (Vraag*)obA->getUserPointer();
+                    vraag->hitCount =1;
+                                     
+                }
+                if( obB->getUserPointer() !=NULL )  {
+                    
+                    Vraag *vraag = (Vraag*)obB->getUserPointer();
+                    vraag->hitCount =1;
+                    
+                }
+                
+                
+                if( obA->getUserPointer() !=NULL  && obB->getUserPointer() ==NULL)
+                {
+                
+                  Vraag *vraag = (Vraag*)obA->getUserPointer();
+                   vraag->hitCount =3;
+                    vraag->body->setDamping(0.8,0.8);
+                    
+                
+                }
+               else if( obB->getUserPointer() !=NULL &&  obA->getUserPointer() ==NULL)  {
+                    
+                    Vraag *vraag = (Vraag*)obB->getUserPointer();
+                     vraag->hitCount =3;
+                   vraag->body->setDamping(0.8,0.8);
+                    
+                }
+              // cout << "worldldHit " << ptA.getX() <<" " << " \n " ;
+			}
+		}
+	}
+    
+    //count++;
+ //  staticCubeCount ;
+  //  staticCubePos;
+    //int i;
+   /* if (staticCubeCount>NUM_STATIC_BOXES)return;
+    for (i=0;i<staticCubeCount;i++)
+    {
+               
+        boxesStatic[i].setPosition(staticCubePos[i*3],staticCubePos[i*3 +1],staticCubePos[i*3 +2]);
+        
+      
+    }
+    
+        
+    for (i=staticCubeCount;i<NUM_STATIC_BOXES;i++)
+    {
+        
+        boxesStatic[i].setPosition(1000,1000,1000);
+        
+        
+    }*/
+  
+ 
+ 
+   
+   
+
+
+}
